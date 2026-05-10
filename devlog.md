@@ -41,3 +41,7 @@ Implemented recursive b-tree search. Basically the search logic compares keys wi
 # May 9th - 8:55 PM
 
 Implemented full b tree insertion and fixed some bugs. Hardest part was correctly handling node splitting while maintaining proper key ordering and the child pointers.
+
+# May 9th - 9:40 PM
+
+Implemented tree traversal functionality. And also implemented all the CLI commands (search, insert, print, load, extract)

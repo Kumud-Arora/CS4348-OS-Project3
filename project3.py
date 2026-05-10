@@ -1,6 +1,7 @@
 import os
 import sys
 import csv
+from unittest import result
 
 # constants
 BLOCK_SIZE = 512
@@ -247,7 +248,42 @@ class BTreeFile:
             self.insert_non_full(new_root, key, value)
         else:
             self.insert_non_full(root, key, value)
+
+    def inorder_print(self, block_id=None):
+        if self.root_id == 0:
+            return
         
+        if block_id is None:
+            block_id = self.root_id
+        
+        node = self.read_node(block_id)
+
+        for i in range(node.num_keys):
+            if node.children[i] != 0:
+                self.inorder_print(node.children[i])
+            print(f"Key: {node.keys[i]}, Value: {node.values[i]}")
+
+        if node.children[node.num_keys] != 0:
+            self.inorder_print(node.children[node.num_keys])
+        
+        def extract_all(self, outfile, block_id=None):
+            if self.root_id == 0:
+                return []
+        
+            if block_id is None:
+                block_id = self.root_id
+            
+            node = self.read_node(block_id)
+
+            for i in range(node.num_keys):
+                if node.children[i] != 0:
+                    self.extract_all(node.children[i], outfile)
+                
+                outfile.write(f"{node.keys[i]}, {node.values[i]}\n")
+
+            if node.children[node.num_keys] != 0:
+                self.extract_all(outfile, node.children[node.num_keys])
+            
 
 
 def create_index(filename):
@@ -262,5 +298,58 @@ def create_index(filename):
         data[16:24] = int_to_bytes(1) 
         f.write(data)
 
+def command_insert(filename, key, value):
+    tree = BTreeFile(filename)
+    tree.insert(int(key), int(value))
+    tree.close()
 
+def command_search(filename, key):
+    tree = BTreeFile(filename)
+    result = tree.search(int(key))
+    if result is None:
+        print("Key not found")
+    else:
+        print(f"{result[0]}, {result[1]}")
+    
+    tree.close()
+
+def command_print(filename):
+    tree = BTreeFile(filename)
+    tree.inorder_print()
+    tree.close()
+
+def command_load(filename, csvfile):
+    if not os.path.exists(csvfile):
+        print("CSV file does not exist")
+        sys.exit(1)
+
+    tree = BTreeFile(filename)
+
+    with open(csvfile, 'r') as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            if len(row) < 2:
+                continue
+
+            key = int(row[0])
+            value = int(row[1])
+            tree.insert(key, value)
+
+    tree.close()
+
+def command_extract(filename, csvfile):
+    if not os.path.exists(csvfile):
+        print("Output file already exists")
+        sys.exit(1)
+
+    tree = BTreeFile(filename)
+
+    with open(csvfile, 'w') as f:
+        tree.extract_all(f)
+
+    tree.close()
+
+
+    
 
