@@ -17,3 +17,12 @@ So basically the project is implementing a disk based b-tree stored in fixed-siz
 # May 9th - 8:11 PM
 
 Implemted BTreeNode structure and serialization logic. Node format follows project specification. Implemented serialization and deserialization to conver nodes b/w memory and raw 512-byte blocks. Also added helper functions for converting integers to/ from 8-byte big endian format. 
+
+# May 9th - 8:21 PM
+
+Implemeneted the BTreeFile manager class. Added the following:
+- header loading
+- header writing
+- node allocation
+- disk block reading
+- disk block writing
