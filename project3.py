@@ -132,3 +132,15 @@ class BTreeFile:
     
         def close(self):
             self.file.close()
+
+def create_index(filename):
+    if os.path.exists(filename):
+        print("File already exists")
+        sys.exit(1)
+
+    with open(filename, 'wb') as f:
+        data = bytearray(BLOCK_SIZE)
+        data[0:8] = MAGIC
+        data[8:16] = int_to_bytes(0)  
+        data[16:24] = int_to_bytes(1) 
+        f.write(data)

@@ -26,3 +26,10 @@ Implemeneted the BTreeFile manager class. Added the following:
 - node allocation
 - disk block reading
 - disk block writing
+
+# May 9th - 8:26 PM
+
+Implemented the create command. The create operation initializes a valid index file containing:
+- correct magic number
+- empty root pointer
+- next block initialized to 1
