@@ -138,24 +138,24 @@ class BTreeFile:
         if self.root_id == 0:
             return None
         
-        if block_id is None:
-            block_id = self.root_id
+        block_id = self.root_id
         
-        node = self.read_node(block_id)
-        i = 0
+        while block_id != 0:
+            node = self.read_node(block_id)
+            i = 0
 
-        while i < node.num_keys and key > node.keys[i]:
-            i += 1
+            while i < node.num_keys and key > node.keys[i]:
+                i += 1
 
-        if i < node.num_keys and key == node.keys[i]:
-            return (node.keys[i], node.values[i])
-        if node.is_leaf():
-            return None
-        
-        child_id = node.children[i]
-        if child_id == 0:
-            return None
-        return self.search(key, child_id)
+            if i < node.num_keys and key == node.keys[i]:
+                return (node.keys[i], node.values[i])
+            
+            if node.is_leaf():
+                return None
+            
+            block_id = node.children[i]
+
+        return None
     
     def split_child(self, parent, index, child):
         new_child = self.allocate_node(parent.block_id)
@@ -195,6 +195,11 @@ class BTreeFile:
         i = node.num_keys - 1
 
         if node.is_leaf():
+            for j in range(node.num_keys):
+                if node.keys[j] == key:
+                    print(f"Key {key} already exists")
+                    return
+                
             while i >= 0 and key < node.keys[i]:
                 node.keys[i + 1] = node.keys[i]
                 node.values[i + 1] = node.values[i]
@@ -206,19 +211,21 @@ class BTreeFile:
             self.write_node(node)
 
         else:
+            for j in range(node.num_keys):
+                if node.keys[j] == key:
+                    print(f"Key {key} already exists")
+                    return
+
             while i >= 0 and key < node.keys[i]:
                 i -= 1
-
             i += 1
 
             child = self.read_node(node.children[i])
 
             if child.num_keys == MAX_KEYS:
                 self.split_child(node, i, child)
-                
                 if key > node.keys[i]:
                     i += 1
-
                 child = self.read_node(node.children[i])
 
             self.insert_non_full(child, key, value)
@@ -252,36 +259,76 @@ class BTreeFile:
         if self.root_id == 0:
             return
         
-        if block_id is None:
-            block_id = self.root_id
-        
+        block_id = self.root_id
         node = self.read_node(block_id)
+        while node.children[0] != 0:
+            block_id = node.children[0]
+            node = self.read_node(block_id)
+        
+        key_index = 0
 
-        for i in range(node.num_keys):
-            if node.children[i] != 0:
-                self.inorder_print(node.children[i])
-            print(f"{node.keys[i]},{node.values[i]}")
+        while True:
+            if key_index < node.num_keys:
+                print(f"{node.keys[key_index]},{node.values[key_index]}")
 
-        if node.children[node.num_keys] != 0:
-            self.inorder_print(node.children[node.num_keys])
+                right_child_id = node.children[key_index + 1]
+                key_index += 1  
+
+                if right_child_id != 0:
+                    block_id = right_child_id
+                    node = self.read_node(block_id)
+                    while node.children[0] != 0:
+                        block_id = node.children[0]
+                        node = self.read_node(block_id)
+                    key_index = 0
+            else:
+                if node.parent_id == 0:
+                    break
+                parent = self.read_node(node.parent_id)
+                came_from = node.block_id
+                for i in range(parent.num_keys + 1):
+                    if parent.children[i] == came_from:
+                        key_index = i
+                        break
+                node = parent
+                
         
     def extract_all(self, outfile, block_id=None):
         if self.root_id == 0:
-            return 
-    
-        if block_id is None:
-            block_id = self.root_id
-        
+            return
+
+        block_id = self.root_id
         node = self.read_node(block_id)
+        while node.children[0] != 0:
+            block_id = node.children[0]
+            node = self.read_node(block_id)
 
-        for i in range(node.num_keys):
-            if node.children[i] != 0:
-                self.extract_all(outfile, node.children[i])
-            
-            outfile.write(f"{node.keys[i]},{node.values[i]}\n")
+        key_index = 0
 
-        if node.children[node.num_keys] != 0:
-            self.extract_all(outfile, node.children[node.num_keys])
+        while True:
+            if key_index < node.num_keys:
+                outfile.write(f"{node.keys[key_index]},{node.values[key_index]}\n")
+
+                right_child_id = node.children[key_index + 1]
+                key_index += 1
+
+                if right_child_id != 0:
+                    block_id = right_child_id
+                    node = self.read_node(block_id)
+                    while node.children[0] != 0:
+                        block_id = node.children[0]
+                        node = self.read_node(block_id)
+                    key_index = 0
+            else:
+                if node.parent_id == 0:
+                    break
+                parent = self.read_node(node.parent_id)
+                came_from = node.block_id
+                for j in range(parent.num_keys + 1):
+                    if parent.children[j] == came_from:
+                        key_index = j
+                        break
+                node = parent
         
 
 
