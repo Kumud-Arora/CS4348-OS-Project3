@@ -36,4 +36,8 @@ Implemented the create command. The create operation initializes a valid index f
 
 # May 9th - 8:31 PM
 
-Implemented recursive b-tree search. Basically the search logic compares keys within current node, recursively descends into child blocks, returns matching key/value pairs if any are found 
+Implemented recursive b-tree search. Basically the search logic compares keys within current node, recursively descends into child blocks, returns matching key/value pairs if any are found s
+
+# May 9th - 8:55 PM
+
+Implemented full b tree insertion and fixed some bugs. Hardest part was correctly handling node splitting while maintaining proper key ordering and the child pointers.
