@@ -144,3 +144,27 @@ def create_index(filename):
         data[8:16] = int_to_bytes(0)  
         data[16:24] = int_to_bytes(1) 
         f.write(data)
+
+def search (self, key, block_id=None):
+    if self.root_id == 0:
+        return None
+    
+    if block_id is None:
+        block_id = self.root_id
+    
+    node = self.read_node(block_id)
+    i = 0
+
+    while i < node.num_keys and key > node.keys[i]:
+        i += 1
+
+    if i < node.num_keys and key == node.keys[i]:
+        return (node.keys[i], node.values[i])
+    if node.is_leaf():
+        return None
+    
+    child_id = node.children[i]
+    if child_id == 0:
+        return None
+    return self.search(key, child_id)
+

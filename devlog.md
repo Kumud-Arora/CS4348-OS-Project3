@@ -33,3 +33,7 @@ Implemented the create command. The create operation initializes a valid index f
 - correct magic number
 - empty root pointer
 - next block initialized to 1
+
+# May 9th - 8:31 PM
+
+Implemented recursive b-tree search. Basically the search logic compares keys within current node, recursively descends into child blocks, returns matching key/value pairs if any are found 
