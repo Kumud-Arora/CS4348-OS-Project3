@@ -53,3 +53,9 @@ Added main function
 # May 9th - 10:03 PM
 
 Debugged, testing now
+
+# May 9th - 11:49 PM
+
+Debugged insert_non_full because I'd found a bug while testing where the duplicate key check in the internal node branch was referencing the child variable before it was actually defined which was causing a NameError at runtime.
+
+
