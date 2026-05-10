@@ -49,3 +49,7 @@ Implemented tree traversal functionality. And also implemented all the CLI comma
 # May 9th - 9:50 PM
 
 Added main function
+
+# May 9th - 10:03 PM
+
+Debugged, testing now
