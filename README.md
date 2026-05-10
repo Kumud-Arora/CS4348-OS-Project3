@@ -36,11 +36,13 @@ The hardest part was correctly implementing node splitting during insertion whil
 This program successfully implements a disk-based B-tree that supports insertion, search, and traversal while keeping memory usage minimal.
 
 ## How to run:
+```bash
 python3 project3.py create <file>
 python3 project3.py insert <file> <key> <value>
 python3 project3.py search <file> <key>
 python3 project3.py print <file>
 python3 project3.py load <file> <csvfile>
 python3 project3.py extract <file> <csvfile>
+```
 
 Also read devlog.md for a better understanding of the project
