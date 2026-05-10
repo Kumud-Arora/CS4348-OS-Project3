@@ -83,4 +83,52 @@ class BTreeNode:
             offset += 8
         
         return node
+
+# B tree class
+class BTreeFile:
+    def __init__(self, filename):
+        self.filename = filename
+        if not os.path.exists(filename):
+            raise Exception("Index file does not exist")
+        
+        self.file = open(filename, 'r+b')
+        self.load_header()
+
+    def load_header(self):
+        self.file.seek(0)
+        data = self.file.read(BLOCK_SIZE)
+
+        if data[0:8] != MAGIC:
+            raise Exception("Invalid index file")
+        
+        self.root_id = bytes_to_int(data[8:16])
+        self.next_block_id = bytes_to_int(data[16:24])
+
+        def write_header(self):
+            data = bytearray(BLOCK_SIZE)
+            data[0:8] = MAGIC
+            data[8:16] = int_to_bytes(self.root_id)
+            data[16:24] = int_to_bytes(self.next_block_id)
+
+            self.file.seek(0)
+            self.file.write(data)
+            self.file.flush()
+
+        def read_node(self, block_id):
+            self.file.seek(block_id * BLOCK_SIZE)
+            data = self.file.read(BLOCK_SIZE)
+            return BTreeNode.deserialize(data)
+        
+        def write_node(self, node):
+            self.file.seek(node.block_id * BLOCK_SIZE)
+            self.file.write(node.serialize())
+            self.file.flush()
+
+        def allocate_node(self):
+            node = BTreeNode(self.next_block_id, parent_id=0)
+            self.next_block_id += 1
+            self.write_header()
+            return node
     
+        def close(self):
+            self.file.close()
