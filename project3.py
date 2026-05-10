@@ -260,29 +260,29 @@ class BTreeFile:
         for i in range(node.num_keys):
             if node.children[i] != 0:
                 self.inorder_print(node.children[i])
-            print(f"Key: {node.keys[i]}, Value: {node.values[i]}")
+            print(f"{node.keys[i]},{node.values[i]}")
 
         if node.children[node.num_keys] != 0:
             self.inorder_print(node.children[node.num_keys])
         
-        def extract_all(self, outfile, block_id=None):
-            if self.root_id == 0:
-                return []
+    def extract_all(self, outfile, block_id=None):
+        if self.root_id == 0:
+            return 
+    
+        if block_id is None:
+            block_id = self.root_id
         
-            if block_id is None:
-                block_id = self.root_id
-            
-            node = self.read_node(block_id)
+        node = self.read_node(block_id)
 
-            for i in range(node.num_keys):
-                if node.children[i] != 0:
-                    self.extract_all(node.children[i], outfile)
-                
-                outfile.write(f"{node.keys[i]}, {node.values[i]}\n")
-
-            if node.children[node.num_keys] != 0:
-                self.extract_all(outfile, node.children[node.num_keys])
+        for i in range(node.num_keys):
+            if node.children[i] != 0:
+                self.extract_all(outfile, node.children[i])
             
+            outfile.write(f"{node.keys[i]},{node.values[i]}\n")
+
+        if node.children[node.num_keys] != 0:
+            self.extract_all(outfile, node.children[node.num_keys])
+        
 
 
 def create_index(filename):
@@ -308,7 +308,7 @@ def command_search(filename, key):
     if result is None:
         print("Key not found")
     else:
-        print(f"{result[0]}, {result[1]}")
+        print(f"{result[0]},{result[1]}")
     
     tree.close()
 
@@ -338,7 +338,7 @@ def command_load(filename, csvfile):
     tree.close()
 
 def command_extract(filename, csvfile):
-    if not os.path.exists(csvfile):
+    if os.path.exists(csvfile):
         print("Output file already exists")
         sys.exit(1)
 
@@ -381,7 +381,7 @@ def main():
             sys.exit(1)
     
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error:{e}")
         sys.exit(1)
 
 if __name__ == "__main__":
