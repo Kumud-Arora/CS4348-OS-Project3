@@ -1,7 +1,6 @@
 import os
 import sys
 import csv
-from unittest import result
 
 # constants
 BLOCK_SIZE = 512
@@ -351,5 +350,40 @@ def command_extract(filename, csvfile):
     tree.close()
 
 
+def main():
+    if len(sys.argv) < 3:
+        print("usage error")
+        sys.exit(1)
     
+    command = sys.argv[1]
+
+    try:
+        if command == "create":
+            create_index(sys.argv[2])
+        
+        elif command == "insert":
+            command_insert(sys.argv[2], sys.argv[3], sys.argv[4])
+
+        elif command == "search":
+            command_search(sys.argv[2], sys.argv[3])
+
+        elif command == "print":
+            command_print(sys.argv[2])
+
+        elif command == "load":
+            command_load(sys.argv[2], sys.argv[3])
+
+        elif command == "extract":
+            command_extract(sys.argv[2], sys.argv[3])
+
+        else:
+            print("Invalid command")
+            sys.exit(1)
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
 

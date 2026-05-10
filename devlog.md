@@ -45,3 +45,7 @@ Implemented full b tree insertion and fixed some bugs. Hardest part was correctl
 # May 9th - 9:40 PM
 
 Implemented tree traversal functionality. And also implemented all the CLI commands (search, insert, print, load, extract)
+
+# May 9th - 9:50 PM
+
+Added main function
